@@ -39,7 +39,7 @@ do
 	export CPPFLAGS=${cppflags[$cc]}
 	export CC=${alias[$cc]:-$cc}
 	export CXX=${CC/gcc/g++}	
-	./Configure no-shared ${config["$platform-$host"]:-"$platform-$host"}
+	./Configure no-shared ${config["$platform-$host"]:-"$host-$platform"}
 	make clean && make
 	
 	mkdir -p ../targets/$host/$platform
