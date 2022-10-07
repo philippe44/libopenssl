@@ -9,13 +9,8 @@ cd ..
 
 set target=targets\win32\x86
 
-if NOT EXIST %target%\ (
-	echo allo
-	mkdir %target%
-)
-
-if NOT EXIST $target\include\ (
-	mkdir %target%\include
+if exist %target% (
+	del %target%\*.lib
 )
 	
 robocopy openssl %target% lib*_static.lib lib*.pdb lib*.dll /NDL /NJH /NJS /nc /ns /np
