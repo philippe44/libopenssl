@@ -7,6 +7,11 @@ declare -a compilers
 
 IFS= read -ra candidates <<< "$list"
 
+# do we have "clean" somewhere in parameters (assuming no compiler has "clean" in it...
+if [[ $@[*]} =~ clean ]]; then
+	clean="clean"
+fi	
+
 # first select platforms/compilers
 for cc in ${candidates[@]}
 do
@@ -29,11 +34,16 @@ do
 done
 
 declare -A config=( [arm-linux]=linux-armv4 [mips-linux]=linux-mips32 [sparc64-linux]=linux64-sparcv9 [powerpc-linux]=linux-ppc )
-
+library=libopenssl.a
+ 
 # then iterate selected platforms/compilers
 for cc in ${compilers[@]}
 do
 	IFS=- read -r platform host dummy <<< $cc
+	
+	if [[ -f $target/$library && -z $clean ]]; then
+		continue
+	fi
 
 	pwd=$(pwd)
 	cd openssl	
@@ -51,8 +61,8 @@ do
 	cp -ur openssl/include/openssl/ $_
 	cp -ur openssl/include/crypto/ $_
 	find $_ -type f -not -name "*.h" -exec rm {} +	
-	ar -rc --thin $target/libopenssl.a $target/libcrypto.a 
-	ar -rc --thin $target/libopenssl.a $target/libssl.a 
+	ar -rc --thin $target/$library $target/libcrypto.a 
+	ar -rc --thin $target/$library $target/libssl.a 
 done
 
 
