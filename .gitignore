@@ -153,18 +153,14 @@ Makefile
 *.0
 
 # All kinds of libraries and executables
-*.a
 *.so
 *.so.*
 *.dylib
 *.dylib.*
-*.dll
 *.dll.*
 *.exe
 *.pyc
 *.exp
-*.lib
-*.pdb
 *.ilk
 *.def
 *.rc
