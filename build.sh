@@ -35,20 +35,24 @@ for cc in ${compilers[@]}
 do
 	IFS=- read -r platform host dummy <<< $cc
 
+	pwd=$(pwd)
 	cd openssl	
 	export CPPFLAGS=${cppflags[$cc]}
 	export CC=${alias[$cc]:-$cc}
 	export CXX=${CC/gcc/g++}	
 	./Configure no-shared ${config["$platform-$host"]:-"$host-$platform"}
 	make clean && make
+	cd $pwd
 	
-	mkdir -p ../targets/$host/$platform
-	cp lib*.a $_
+	target=targets/$host/$platform
+	mkdir -p $target
+	cp openssl/lib*.a $_
 	mkdir -p $_/include
-	cp -ur include/openssl/ $_
-	cp -ur include/crypto/ $_
-	find $_ -type f -not -name "*.h" -exec rm {} +
-	cd ..
+	cp -ur openssl/include/openssl/ $_
+	cp -ur openssl/include/crypto/ $_
+	find $_ -type f -not -name "*.h" -exec rm {} +	
+	ar -rc --thin $target/libopenssl.a $target/libcrypto.a 
+	ar -rc --thin $target/libopenssl.a $target/libssl.a 
 done
 
 
