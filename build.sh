@@ -20,7 +20,7 @@ do
 		continue
 	fi
 	
-	if [[ $# == 0 ]]; then
+	if [[ $# == 0 || ($# == 1 && -n $clean) ]]; then
 		compilers+=($cc)
 		continue
 	fi
@@ -41,7 +41,7 @@ for cc in ${compilers[@]}
 do
 	IFS=- read -r platform host dummy <<< $cc
 	
-	if [[ -f $target/$library && -z $clean ]]; then
+	if [ -f $target/$library ] && [[ -z $clean ]]; then
 		continue
 	fi
 
