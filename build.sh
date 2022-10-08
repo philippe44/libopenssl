@@ -61,6 +61,7 @@ do
 	cp -ur openssl/include/openssl/ $_
 	cp -ur openssl/include/crypto/ $_
 	find $_ -type f -not -name "*.h" -exec rm {} +	
+	rm -f $target/$library
 	ar -rc --thin $target/$library $target/libcrypto.a 
 	ar -rc --thin $target/$library $target/libssl.a 
 done
