@@ -13,8 +13,9 @@ if exist %target% (
 	del %target%\*.lib
 )
 	
-robocopy openssl %target% lib*_static.lib lib*.pdb lib*.dll /NDL /NJH /NJS /nc /ns /np
+robocopy openssl %target% lib*.lib lib*.pdb lib*.dll lib*.def /NDL /NJH /NJS /nc /ns /np
 robocopy openssl\include %target%\include *.h /S /XD internal /NDL /NJH /NJS /nc /ns /np
-lib.exe /OUT:%target%/libopenssl.lib %target%/libcrypto_static.lib %target%/libssl_static.lib
+lib.exe /OUT:%target%/libopenssl_static.lib %target%/libcrypto_static.lib %target%/libssl_static.lib
+lib.exe /OUT:%target%/libopenssl.lib %target%/libcrypto.lib %target%/libssl.lib
 
 endlocal
