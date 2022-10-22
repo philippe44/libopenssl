@@ -40,8 +40,10 @@ library=libopenssl.a
 for cc in ${compilers[@]}
 do
 	IFS=- read -r platform host dummy <<< $cc
+
+	target=targets/$host/$platform
 	
-	if [ -f $target/$library ] && [[ -z $clean ]]; then
+	if [[ -f $target/$library && -z $clean ]]; then
 		continue
 	fi
 
@@ -52,11 +54,11 @@ do
 	export CXX=${CC/gcc/g++}	
 	export AR=${CC%-*}-ar
 	export RANLIB=${CC%-*}-ranlib
+
 	./Configure no-shared ${config["$platform-$host"]:-"$host-$platform"}
 	make clean && make -j8
 	cd $pwd
 	
-	target=targets/$host/$platform
 	mkdir -p $target
 	cp openssl/lib*.a $_
 	mkdir -p $_/include
@@ -67,7 +69,7 @@ do
 	if [[ $host =~ linux ]]; then
 		ar -rc --thin $target/$library $target/*.a 
 	else
-		$AR -rc $target/$library $target/*.a 
+		${CC%-*}-libtool -static -o $target/$library $target/*.a 
 	fi
 done
 
