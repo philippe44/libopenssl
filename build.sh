@@ -59,12 +59,17 @@ do
 	make clean && make -j8
 	cd $pwd
 	
+	# includes
 	mkdir -p $target
 	cp openssl/lib*.a $_
+	
+	# libraries (beware $_)
 	mkdir -p $_/include
 	cp -ur openssl/include/openssl/ $_
 	cp -ur openssl/include/crypto/ $_
 	find $_ -type f -not -name "*.h" -exec rm {} +	
+	
+	# concatenate all in a thin (if possible)
 	rm -f $target/$library
 	if [[ $host =~ linux ]]; then
 		ar -rc --thin $target/$library $target/*.a 
