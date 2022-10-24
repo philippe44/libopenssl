@@ -1,7 +1,7 @@
 #!/bin/bash
 
-list="x86_64-linux-gnu-gcc x86-linux-gnu-gcc arm-linux-gnueabi-gcc aarch64-linux-gnu-gcc sparc64-linux-gnu-gcc mips-linux-gnu-gcc powerpc-linux-gnu-gcc x86_64-macos-darwin-gcc"
-declare -A alias=( [x86-linux-gnu-gcc]=i686-linux-gnu-gcc [x86_64-macos-darwin-gcc]=x86_64-apple-darwin19-cc )
+list="x86_64-linux-gnu-gcc x86-linux-gnu-gcc arm-linux-gnueabi-gcc aarch64-linux-gnu-gcc sparc64-linux-gnu-gcc mips-linux-gnu-gcc powerpc-linux-gnu-gcc x86_64-macos-darwin-gcc x86_64-freebsd-gnu-gcc x86_64-solaris-gnu-gcc"
+declare -A alias=( [x86-linux-gnu-gcc]=i686-linux-gnu-gcc [x86_64-macos-darwin-gcc]=x86_64-apple-darwin19-gcc [x86_64-freebsd-gnu-gcc]=x86_64-gnu-freebsd13.1-gcc [x86_64-solaris-gnu-gcc]=x86_64-gnu-solaris2.x-gcc )
 declare -A cppflags=( [mips-linux-gnu-gcc]="-march=mips32" [powerpc-linux-gnu-gcc]="-m32" [x86_64-macos-darwin-gcc]="-fno-temp-file" )
 declare -a compilers
 
@@ -33,7 +33,7 @@ do
 	done
 done
 
-declare -A config=( [arm-linux]=linux-armv4 [mips-linux]=linux-mips32 [sparc64-linux]=linux64-sparcv9 [powerpc-linux]=linux-ppc [x86_64-macos]=darwin64-x86_64-cc)
+declare -A config=( [arm-linux]=linux-armv4 [mips-linux]=linux-mips32 [sparc64-linux]=linux64-sparcv9 [powerpc-linux]=linux-ppc [x86_64-macos]=darwin64-x86_64-cc [x86_64-freebsd]=BSD-x86_64 [x86_64-solaris]=solaris64-x86_64-gcc )
 library=libopenssl.a
  
 # then iterate selected platforms/compilers
@@ -71,10 +71,10 @@ do
 	
 	# concatenate all in a thin (if possible)
 	rm -f $target/$library
-	if [[ $host =~ linux ]]; then
-		ar -rc --thin $target/$library $target/*.a 
+	if [[ $host =~ macos ]]; then
+		${CC%-*}-libtool -static -o $target/$library $target/*.a 		
 	else
-		${CC%-*}-libtool -static -o $target/$library $target/*.a 
+		ar -rc --thin $target/$library $target/*.a 
 	fi
 done
 
