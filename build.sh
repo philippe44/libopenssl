@@ -35,9 +35,6 @@ done
 
 declare -A config=( [arm-linux]=linux-armv4 [mips-linux]=linux-mips32 [sparc64-linux]=linux64-sparcv9 [powerpc-linux]=linux-ppc [x86_64-macos]=darwin64-x86_64-cc [x86_64-freebsd]=BSD-x86_64 [x86_64-solaris]=solaris64-x86_64-gcc )
 
-# on solaris, maybe an issue with gnu-as but it does a solid crash when asm is enabled
-declare -A options=( [x86_64-solaris]=no-asm )
-
 library=libopenssl.a
  
 # then iterate selected platforms/compilers
@@ -58,7 +55,7 @@ do
 	export AR=${CC%-*}-ar
 	export RANLIB=${CC%-*}-ranlib
 
-	./Configure no-shared ${options["$platform-$host"]} ${config["$platform-$host"]:-"$host-$platform"}
+	./Configure no-shared ${config["$platform-$host"]:-"$host-$platform"}
 	make clean && make -j8
 	popd
 	
