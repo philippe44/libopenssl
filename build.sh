@@ -1,7 +1,7 @@
 #!/bin/bash
 
 list="x86_64-linux-gnu-gcc x86-linux-gnu-gcc arm-linux-gnueabi-gcc aarch64-linux-gnu-gcc sparc64-linux-gnu-gcc mips-linux-gnu-gcc powerpc-linux-gnu-gcc x86_64-macos-darwin-gcc x86_64-freebsd-gnu-gcc x86_64-solaris-gnu-gcc"
-declare -A alias=( [x86-linux-gnu-gcc]=i686-linux-gnu-gcc [x86_64-macos-darwin-gcc]=x86_64-apple-darwin19-gcc [x86_64-freebsd-gnu-gcc]=x86_64-gnu-freebsd13.1-gcc [x86_64-solaris-gnu-gcc]=x86_64-gnu-solaris2.x-gcc )
+declare -A alias=( [x86-linux-gnu-gcc]=i686-linux-gnu-gcc [x86_64-macos-darwin-gcc]=x86_64-apple-darwin19-cc [x86_64-freebsd-gnu-gcc]=x86_64-gnu-freebsd13.1-gcc [x86_64-solaris-gnu-gcc]=x86_64-gnu-solaris2.x-gcc )
 declare -A cppflags=( [mips-linux-gnu-gcc]="-march=mips32" [powerpc-linux-gnu-gcc]="-m32" [x86_64-macos-darwin-gcc]="-fno-temp-file" )
 declare -a compilers
 
@@ -34,6 +34,10 @@ do
 done
 
 declare -A config=( [arm-linux]=linux-armv4 [mips-linux]=linux-mips32 [sparc64-linux]=linux64-sparcv9 [powerpc-linux]=linux-ppc [x86_64-macos]=darwin64-x86_64-cc [x86_64-freebsd]=BSD-x86_64 [x86_64-solaris]=solaris64-x86_64-gcc )
+
+# on solaris, maybe an issue with gnu-as but it does a solid crash when asm is enabled
+declare -A options=( [x86_64-solaris]=no-asm )
+
 library=libopenssl.a
  
 # then iterate selected platforms/compilers
@@ -47,17 +51,16 @@ do
 		continue
 	fi
 
-	pwd=$(pwd)
-	cd openssl	
+	pushd openssl	
 	export CPPFLAGS=${cppflags[$cc]}
 	export CC=${alias[$cc]:-$cc}
 	export CXX=${CC/gcc/g++}	
 	export AR=${CC%-*}-ar
 	export RANLIB=${CC%-*}-ranlib
 
-	./Configure no-shared ${config["$platform-$host"]:-"$host-$platform"}
+	./Configure no-shared ${options["$platform-$host"]} ${config["$platform-$host"]:-"$host-$platform"}
 	make clean && make -j8
-	cd $pwd
+	popd
 	
 	# includes
 	mkdir -p $target
