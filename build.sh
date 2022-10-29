@@ -52,7 +52,7 @@ for cc in ${candidates[@]}; do
 	done
 done
 
-declare -A config=( [arm-linux]=linux-armv4 [mipsel-linux]=linux-mips32 [sparc64-linux]=linux64-sparcv9 [powerpc-linux]=linux-ppc [x86_64-macos]=darwin64-x86_64-cc [x86_64-freebsd]=BSD-x86_64 [x86_64-solaris]=solaris64-x86_64-gcc )
+declare -A config=( [arm-linux]=linux-armv4 [mips-linux]=linux-generic32 [sparc64-linux]=linux64-sparcv9 [powerpc-linux]=linux-ppc [x86_64-macos]=darwin64-x86_64-cc [x86_64-freebsd]=BSD-x86_64 [x86_64-solaris]=solaris64-x86_64-gcc )
 
 library=libopenssl.a
  
