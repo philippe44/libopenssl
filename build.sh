@@ -1,12 +1,12 @@
 #!/bin/bash
 
-list="x86_64-linux-gnu-gcc x86-linux-gnu-gcc armhf-linux-gnueabi-gcc aarch64-linux-gnu-gcc \
+list="x86_64-linux-gnu-gcc x86-linux-gnu-gcc arm-linux-gnueabi-gcc aarch64-linux-gnu-gcc \
       sparc64-linux-gnu-gcc mipsel-linux-gnu-gcc powerpc-linux-gnu-gcc x86_64-macos-darwin-gcc \
 	  x86_64-freebsd-gnu-gcc x86_64-solaris-gnu-gcc"
 
 declare -A alias=( [x86-linux-gnu-gcc]=i686-stretch-linux-gnu-gcc \
 				   [x86_64-linux-gnu-gcc]=x86_64-stretch-linux-gnu-gcc \
-				   [armhf-linux-gnueabi-gcc]=armv7-stretch-linux-gnueabi-gcc \
+				   [arm-linux-gnueabi-gcc]=armv7-stretch-linux-gnueabi-gcc \
 				   [aarch64-linux-gnu-gcc]=aarch64-stretch-linux-gnu-gcc \
 				   [sparc64-linux-gnu-gcc]=sparc64-stretch-linux-gnu-gcc \
 				   [mipsel-linux-gnu-gcc]=mips64el-stretch-linux-gnu-gcc \
@@ -15,9 +15,9 @@ declare -A alias=( [x86-linux-gnu-gcc]=i686-stretch-linux-gnu-gcc \
 				   [x86_64-freebsd-gnu-gcc]=x86_64-cross-freebsd12.3-gcc \
 				   [x86_64-solaris-gnu-gcc]=x86_64-cross-solaris2.x-gcc )
 
-declare -A cppflags=( [sparc64-linux-gnu-gcc]="-mcpu=v7" \
-                      [mipsel-linux-gnu-gcc]="-march=mips32" \
-                      [powerpc-linux-gnu-gcc]="-m32" )
+declare -A cflags=( [sparc64-linux-gnu-gcc]="-mcpu=v7" \
+                    [mipsel-linux-gnu-gcc]="-march=mips32" \
+                    [powerpc-linux-gnu-gcc]="-m32" )
 					
 declare -a compilers
 
@@ -52,7 +52,7 @@ for cc in ${candidates[@]}; do
 	done
 done
 
-declare -A config=( [armhf-linux]=linux-armv4 [mipsel-linux]=linux-mips32 [sparc64-linux]=linux64-sparcv9 [powerpc-linux]=linux-ppc [x86_64-macos]=darwin64-x86_64-cc [x86_64-freebsd]=BSD-x86_64 [x86_64-solaris]=solaris64-x86_64-gcc )
+declare -A config=( [arm-linux]=linux-armv4 [mipsel-linux]=linux-mips32 [sparc64-linux]=linux64-sparcv9 [powerpc-linux]=linux-ppc [x86_64-macos]=darwin64-x86_64-cc [x86_64-freebsd]=BSD-x86_64 [x86_64-solaris]=solaris64-x86_64-gcc )
 
 library=libopenssl.a
  
@@ -68,7 +68,7 @@ do
 	fi
 
 	pushd openssl	
-	export CPPFLAGS=${cppflags[$cc]}
+	export CFLAGS=${cflags[$cc]}
 	export CC=${alias[$cc]:-$cc}
 	export CXX=${CC/gcc/g++}	
 	export AR=${CC%-*}-ar
