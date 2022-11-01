@@ -18,8 +18,7 @@ declare -A alias=( [x86-linux-gnu-gcc]=i686-stretch-linux-gnu-gcc \
 
 declare -A cflags=( [sparc64-linux-gnu-gcc]="-mcpu=v7" \
                     [mips-linux-gnu-gcc]="-march=mips32" \
-                    [powerpc-linux-gnu-gcc]="-m32" \
-		    [arm64e-macos-darwin-cc]="-fno-temp-file" )
+                    [powerpc-linux-gnu-gcc]="-m32" )
 					
 declare -a compilers
 
@@ -54,7 +53,14 @@ for cc in ${candidates[@]}; do
 	done
 done
 
-declare -A config=( [arm-linux]=linux-armv4 [mips-linux]=linux-generic32 [sparc64-linux]=linux64-sparcv9 [powerpc-linux]=linux-ppc [x86_64-macos]=darwin64-x86_64-cc [arm64e-macos]=darwin64-arm64-cc [x86_64-freebsd]=BSD-x86_64 [x86_64-solaris]=solaris64-x86_64-gcc )
+declare -A config=( [arm-linux]=linux-armv4 \
+                    [mips-linux]=linux-generic32 \
+					[sparc64-linux]=linux64-sparcv9 \
+					[powerpc-linux]=linux-ppc \
+					[x86_64-macos]=darwin64-x86_64-cc \
+					[arm64e-macos]=darwin64-arm64-cc \
+					[x86_64-freebsd]=BSD-x86_64 \
+					[x86_64-solaris]=solaris64-x86_64-gcc )
 
 library=libopenssl.a
  
@@ -72,10 +78,15 @@ do
 	pushd openssl	
 	export CFLAGS=${cflags[$cc]}
 	export CC=${alias[$cc]:-$cc}
-	export CXX=${CC/gcc/g++}	
 	export AR=${CC%-*}-ar
 	export RANLIB=${CC%-*}-ranlib
-
+	if [[ $CC =~ -gcc ]]; then
+		export CXX=${CC%-*}-g++
+	else
+		export CXX=${CC%-*}-c++
+		CFLAGS+=" -fno-temp-file -stdlib=libc++"
+	fi	
+	
 	./Configure no-shared ${config["$platform-$host"]:-"$host-$platform"}
 	make clean && make -j8
 	popd
